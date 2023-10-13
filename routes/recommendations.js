@@ -12,8 +12,27 @@ router.get('/', function(req, res, next) {
  });
 });
 
-/* POST request. */
+
+//Post New Recommendations
 router.post('/', jsonParser, function(req, res, next) {
+  const expectedAttributed = ["avatar", "name", "role", "description"]
+    Object.keys(req.body).forEach(param => {
+      if (!(expectedAttributed.includes(param))) {
+        console.log(param);
+        res.status(400).end("Wrong Attr");
+      }else{
+        if(req.body[param] == ''){
+          res.status(400).end(param + " must have a value");
+        }
+      }
+    });
+    if (req.body.avatar == null || req.body.name == null) {
+      res.status(400).end("Avatar/name not provided");
+    }
+    if (!([1, 2, 3].includes(req.body.avatar))) {
+      res.status(400).end("Wrong avatar provided")
+    }
+    
   let rawdata = fs.readFileSync(path.resolve(__dirname, "../data/recommendations.json"));
   let recommendationsArray = JSON.parse(rawdata);
   if(recommendationsArray.filter(x => x.name === req.body.name).length == 0) {
@@ -22,7 +41,6 @@ router.post('/', jsonParser, function(req, res, next) {
   }
   res.end();
 });
-
 
 /*DELETE*/
 router.delete('/', jsonParser, function(req, res, next) {
