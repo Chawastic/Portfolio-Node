@@ -20,4 +20,17 @@ router.post('/', jsonParser, function(req, res, next) {
   res.end();
 });
 
+// Your DELETE route
+router.delete('/', jsonParser, function(req, res, next) {
+  let textToDelete = req.body.textToDelete;
+  if (!textToDelete) {
+    return res.status(400).json({ error: "textToDelete is required" });
+  }
+  let rawdata = fs.readFileSync(path.resolve(__dirname, "../data/introductionArray.json"));
+  let array = JSON.parse(rawdata);
+  array = array.filter(item => item !== textToDelete);
+  fs.writeFileSync(path.resolve(__dirname, "../data/introductionArray.json"), JSON.stringify(array));
+  res.status(200).end();
+});
+
 module.exports = router;
